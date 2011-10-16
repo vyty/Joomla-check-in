@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.7" type="plugin" group="content" method="upgrade">
+    <name>plg_content_vyty_checkin</name>
+    <author>Vyty.com</author>
+    <creationDate>Octomber, 2011</creationDate>
+    <copyright>Copyright (C) 2010  Vyty.com. All rights reserved.</copyright>
+    <license>http://www.gnu.org/copyleft/gpl.html GNU/GPL</license>
+    <authorEmail>todor@vyty.com</authorEmail>
+    <authorUrl>http://vyty.com</authorUrl>
+    <version>1.0</version>
+    <description><![CDATA[<p><a href="#">Vyty Check-In</a> is a plugin that gemify your site by adding a check-in button on your web pages. It will help you to increase the engagament of your readers.</p><p><a href="#" title="Gamification" target="_blank">Download more gamification extensions</a><p>Please, <a href="#">vote for the plugin</a> on Joomla! Extensions Directory</p>]]></description>
+    <files>
+        <filename plugin="vytycheckin">vytycheckin.php</filename>
+		<filename>index.html</filename>
+    </files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_content_vytycheckin.ini</language>
+		<language tag="en-GB">en-GB.plg_content_vytycheckin.sys.ini</language>
+	</languages>
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="position" type="list" default="2" label="Position" description="The position where you want to put buttons." >
+				   <option value="0">Both</option>
+				   <option value="1">Top</option>
+				   <option value="2">Bottom</option>
+				</field>
+				
+				<field name="showInArticles" type="radio" default="1" label="Show in articles" description="Display the buttons in the view 'article'." >
+                   <option value="0">No</option>
+                   <option value="1">Yes</option>
+                </field>
+				<field name="showInCategories" type="radio" default="1" label="Show in categories" description="Display buttons in the view 'category' and format 'blog'." >
+                   <option value="0">No</option>
+                   <option value="1">Yes</option>
+                </field>
+				
+				<field name="excludeCats" type="text" default="" size="100"
+						label="Exclude categories"
+						description="List with excluded categories divided by comma. You must enter the IDs of categories." />
+				<field name="excludeArticles" type="text" default="" size="100"
+						label="Exclude articles"
+						description="List of excluded articles divided by comma. You must enter the IDs of articles." />
+				<field name="includeArticles" type="text" default="" size="100"
+                label="Display in that articles"
+                description="Displays the buttons in these articles notwithstanding the exclusion settings. You must enter the IDs of articles." />
+
+				<field name="spacer1" type="spacer" class="text" label="############# Check-In SETTINGS #############" />
+				<field name="checkinButton" type="radio" default="1" label="Check-in Button" description="Show or hide the check-in button." >
+				   <option value="0">Hide</option>
+				   <option value="1">Show</option>
+				</field>
+				<field name="checkinImpCode" type="radio" default="1" label="Implementation Code" description="Put the implementation code. That is the code that initialize the widgets. If the code has been installed, it is not necessary to put the code again. " >
+                   <option value="0">No</option>
+                   <option value="1">Yes</option>
+                </field>
+				<field name="gameId" type="text" default="" size="80" label="Game Id" description="Enter the ID of the game." />
+				<field name="checkinLayout" type="list" default="standart" label="Check-In Layout" description="Select the layout of the check-in button." >
+				   <option value="standart">Standart</option>
+				</field>	 
+			</fieldset>
+        </fields>
+	</config>
+	
+</extension>
