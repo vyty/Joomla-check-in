@@ -23,21 +23,13 @@ jimport('joomla.plugin.plugin');
  * @since 		1.5
  */
 class plgContentVytyCheckin extends JPlugin {
-    
+       
     static $flag = 0;
-    private $currentView = "";
     
-    /**
-     * Constructor
-     *
-     * @param object $subject The object to observe
-     * @param array  $config  An optional associative array of configuration settings.
-     * Recognized key values include 'name', 'group', 'params', 'language'
-     * (this list is not meant to be comprehensive).
-     * @since 1.5
-     */
-    public function __construct(&$subject, $config = array()) {
-        parent::__construct($subject, $config);
+    public function __construct($subject, $params){
+        
+        parent::__construct($subject, $params);
+
     }
     
     /**
@@ -50,8 +42,8 @@ class plgContentVytyCheckin extends JPlugin {
      * @param   int     The 'page' number
      * @since   1.6
      */
-    public function onContentPrepare($context, &$article, &$params, $limitstart) {
-
+    public function onPrepareContent(&$article, &$params, $limitstart){
+        
         $app =& JFactory::getApplication();
         /* @var $app JApplication */
 
@@ -59,7 +51,7 @@ class plgContentVytyCheckin extends JPlugin {
             return;
         }
         
-        $doc     = JFactory::getDocument();
+        $doc   = JFactory::getDocument();
         /* @var $doc JDocumentHtml */
         $docType = $doc->getType();
         
@@ -70,54 +62,88 @@ class plgContentVytyCheckin extends JPlugin {
         
         $currentOption = JRequest::getCmd("option");
         
-        if( ($currentOption != "com_content") OR !isset($this->params)) {
+        if(($currentOption != "com_content") OR !isset($article) OR empty($article->id) OR !isset($this->params)) {
             return;            
         }
         
-        $this->currentView  = JRequest::getCmd("view");
+        // Generate buttons
+        $buttons    = $this->getContent($article, $params);
+        $position   = $this->params->get('position');
+        
+        switch($position){
+            case 1:
+                $article->text = $buttons . $article->text;
+                break;
+            case 2:
+                $article->text = $article->text . $buttons;
+                break;
+            default:
+                $article->text = $buttons . $article->text . $buttons;
+                break;
+        }
+        
+        return;
+    }
+    
+    
+    /**
+     * Generate content
+     * @param   object      The article object.  Note $article->text is also available
+     * @param   object      The article params
+     * @return  string      Returns html code or empty string.
+     */
+    private function getContent(&$article, &$params){
+        
+        $doc         = JFactory::getDocument();
+        $currentView = JRequest::getWord("view");
+        
+        // Check where we are able to show buttons?
+        $showInArticles     = $this->params->get('showInArticles');
+        $showInCategories   = $this->params->get('showInCategories');
+        $showInSections     = $this->params->get('showInSections');
+        $showInFrontPage    = $this->params->get('showInFrontPage');
         
         /** Check for selected views, which will display the buttons. **/   
         /** If there is a specific set and do not match, return an empty string.**/
-        $showInArticles     = $this->params->get('showInArticles');
-        
-        if(!$showInArticles AND (strcmp("article", $this->currentView) == 0)){
-            return;
+        if(!$showInArticles AND (strcmp("article", $currentView) == 0)){
+            return "";
         }
         
-        // Check for category view
-        $showInCategories   = $this->params->get('showInCategories');
-        
-        if(!$showInCategories AND (strcmp("category", $this->currentView) == 0)){
-            return;
+        if(!$showInCategories AND (strcmp("category", $currentView) == 0)){
+            return "";
         }
         
-        if($showInCategories AND ($this->currentView == "category")) {
-            $articleData        = $this->getArticle($article);
-            $article->id        = $articleData['id'];
-            $article->catid     = $articleData['catid'];
-            $article->title     = $articleData['title'];
-            $article->slug      = $articleData['slug'];
-            $article->catslug   = $articleData['catslug'];
+        if(!$showInSections AND (strcmp("section", $currentView) == 0)){
+            return "";
         }
         
-        if(!isset($article) OR empty($article->id) ) {
-            return;            
+        if(!$showInFrontPage AND (strcmp("frontpage", $currentView) == 0)){
+            return "";
         }
         
+        // Exclude categories
+        $excludedCats = $this->params->get('excludeCats');
+        if(!empty($excludedCats)){
+            $excludedCats = explode(',', $excludedCats);
+        }
+        settype($excludedCats, 'array');
+        JArrayHelper::toInteger($excludedCats);
+        
+        // Exclude sections
+        $excludeSections = $this->params->get('excludeSections');
+        if(!empty($excludeSections)){
+            $excludeSections = explode(',', $excludeSections);
+        }
+        settype($excludeSections, 'array');
+        JArrayHelper::toInteger($excludeSections);
+        
+        // Exclude articles
         $excludeArticles = $this->params->get('excludeArticles');
         if(!empty($excludeArticles)){
             $excludeArticles = explode(',', $excludeArticles);
         }
         settype($excludeArticles, 'array');
         JArrayHelper::toInteger($excludeArticles);
-        
-        // Exluded categories
-        $excludedCats           = $this->params->get('excludeCats');
-        if(!empty($excludedCats)){
-            $excludedCats = explode(',', $excludedCats);
-        }
-        settype($excludedCats, 'array');
-        JArrayHelper::toInteger($excludedCats);
         
         // Included Articles
         $includedArticles = $this->params->get('includeArticles');
@@ -129,46 +155,16 @@ class plgContentVytyCheckin extends JPlugin {
         
         if(!in_array($article->id, $includedArticles)) {
             // Check exluded places
-            if(in_array($article->id, $excludeArticles) OR in_array($article->catid, $excludedCats)){
+            if(in_array($article->catid, $excludedCats) OR in_array($article->sectionid, $excludeSections) OR in_array($article->id, $excludeArticles)){
                 return "";
             }
         }
-            
-        // Generate content
-		$content      = $this->getContent($article, $params);
-        $position     = $this->params->get('position');
         
-        switch($position){
-            case 1:
-                $article->text = $content . $article->text;
-                break;
-            case 2:
-                $article->text = $article->text . $content;
-                break;
-            default:
-                $article->text = $content . $article->text . $content;
-                break;
-        }
-        
-        return;
-    }
-    
-    /**
-     * Generate the content with buttons
-     * 
-     * @param   object      The article object.  Note $article->text is also available
-     * @param   object      The article params
-     * @return  string      Returns html code or empty string.
-     */
-    private function getContent(&$article, &$params){
-        
-        $doc   = JFactory::getDocument();
-        /* @var $doc JDocumentHtml */
-        
-        $url = JURI::getInstance();
+        $url = JURI::base();
+        $url = new JURI($url);
         $root= $url->getScheme() ."://" . $url->getHost();
         
-        $url = JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug), false);
+        $url = JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid), false);
         $url = $root.$url;
         
         $html = '
@@ -182,48 +178,6 @@ class plgContentVytyCheckin extends JPlugin {
     
         return $html;
     }
-    
-    /**
-     * 
-     * Get the information about aritcle.
-     * This method will be used if you want to add the button on the view 'category'
-     * @param object $article
-     */
-    private function getArticle(&$article) {
-        
-        $db = JFactory::getDbo();
-        
-        $query = "
-            SELECT 
-                `#__content`.`id`,
-                `#__content`.`catid`,
-                `#__content`.`alias`,
-                `#__content`.`title`,
-                `#__categories`.`alias` as category_alias
-            FROM
-                `#__content`
-            INNER JOIN
-                `#__categories`
-            ON
-                `#__content`.`catid`=`#__categories`.`id`
-            WHERE
-                `#__content`.`introtext` = " . $db->Quote($article->text); 
-        
-        $db->setQuery($query);
-        $result = $db->loadAssoc();
-        
-        if ($db->getErrorNum() != 0) {
-            JError::raiseError(500, "System error!", $db->getErrorMsg());
-        }
-        
-        if(!empty($result)) {
-            $result['slug'] = $result['alias'] ? ($result['id'].':'.$result['alias']) : $result['id'];
-            $result['catslug'] = $result['category_alias'] ? ($result['catid'].':'.$result['category_alias']) : $result['catid'];
-        }
-        
-        return $result;
-    }
-    
     
     /**
      * 
@@ -270,5 +224,4 @@ class plgContentVytyCheckin extends JPlugin {
         
         return $html;
     }
-        
 }
