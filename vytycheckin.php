@@ -2,7 +2,7 @@
 /**
  * @package		 Vyty Plugins
  * @subpackage	 Joomla!
- * @copyright    Copyright (C) 2010 Vyty.com <todor@vyty.com>. All rights reserved.
+ * @copyright    Copyright (C) 2010 Vyty.com. All rights reserved.
  * @license      http://www.gnu.org/copyleft/gpl.html GNU/GPL
  * Vyty Check-In is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
@@ -24,7 +24,7 @@ jimport('joomla.plugin.plugin');
  */
 class plgContentVytyCheckin extends JPlugin {
     
-    static $flag = 0;
+    static $vytyFlag = 0;
     private $currentView = "";
     
     /**
@@ -254,7 +254,7 @@ class plgContentVytyCheckin extends JPlugin {
         
         $html = "";
         
-        if($params->get("checkinButton") AND $params->get("checkinImpCode") AND ( self::$flag == 0 )) {
+        if($params->get("checkinButton") AND $params->get("checkinImpCode") AND ( self::$vytyFlag == 0 )) {
             $html = '<div id="vyty_root"></div>
 <script type="text/javascript">
   (function() {
@@ -265,7 +265,7 @@ class plgContentVytyCheckin extends JPlugin {
     s.parentNode.insertBefore(vy, s);
   })();
 </script>';
-            self::$flag++;
+            self::$vytyFlag++;
         }
         
         return $html;
