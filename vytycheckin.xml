@@ -8,7 +8,7 @@
     <authorEmail>todor@vyty.com</authorEmail>
     <authorUrl>http://vyty.com</authorUrl>
     <version>1.0</version>
-    <description><![CDATA[<p><a href="#">Vyty Check-In</a> is a plugin that gemify your site by adding a check-in button on your web pages. It will help you to increase the engagament of your readers.</p><p><a href="#" title="Gamification" target="_blank">Download more gamification extensions</a><p>Please, <a href="#">vote for the plugin</a> on Joomla! Extensions Directory</p>]]></description>
+    <description><![CDATA[<p><a href="https://github.com/vyty/Joomla-check-in">Vyty Check-In</a> is a plugin that gemify your site by adding a check-in button on your web pages. It will help you to increase the engagament of your readers.</p><p><a href="http://vyty.com/download" title="Gamification" target="_blank">Download more gamification extensions</a></p><p>Please, <a href="http://extensions.joomla.org/extensions/social-web/social-profiles/18720">vote for the plugin</a> on Joomla! Extensions Directory</p>]]></description>
     <files>
         <filename plugin="vytycheckin">vytycheckin.php</filename>
     </files>

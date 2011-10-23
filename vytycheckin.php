@@ -24,7 +24,7 @@ jimport('joomla.plugin.plugin');
  */
 class plgContentVytyCheckin extends JPlugin {
        
-    static $flag = 0;
+    static $vytyFlag = 0;
     
     public function __construct($subject, $params){
         
@@ -208,7 +208,7 @@ class plgContentVytyCheckin extends JPlugin {
         
         $html = "";
         
-        if($params->get("checkinButton") AND $params->get("checkinImpCode") AND ( self::$flag == 0 )) {
+        if($params->get("checkinButton") AND $params->get("checkinImpCode") AND ( self::$vytyFlag == 0 )) {
             $html = '<div id="vyty_root"></div>
 <script type="text/javascript">
   (function() {
@@ -219,7 +219,7 @@ class plgContentVytyCheckin extends JPlugin {
     s.parentNode.insertBefore(vy, s);
   })();
 </script>';
-            self::$flag++;
+            self::$vytyFlag++;
         }
         
         return $html;
